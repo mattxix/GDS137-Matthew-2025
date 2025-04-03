@@ -6,6 +6,7 @@ var timer;
 //1000 ms or 1 second / FPS
 var interval = 1000/60;
 var player;
+var speedY;
 
 	//Set Up the Canvas
 	canvas = document.getElementById("canvas");
@@ -13,9 +14,11 @@ var player;
 	
 	//Instantiate the Player
 	player = new GameObject(50, canvas.height / 2 , 20, 100);
-	ball = new GameObject(canvas.width / 2, canvas.height / 2 ,50,50);
+	ball = new GameObject(canvas.width / 2, canvas.height / 2 ,25,25);
+    speedY = 8;
     ball.vx = 8;
-	ball.vy = -8;
+	ball.vy = 0;
+    
 
 	//Set the Animation Timer
 	timer = setInterval(animate, interval);
@@ -69,7 +72,10 @@ function animate()
         if(ball.x < (canvas.width - canvas.width) - ball.width/2)
         {
             ball.x = canvas.width / 2;
-            ball.y = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.vx = 8;
+	        ball.vy = 0;
+
         }
         
         //--------------Bounce of Top----------------------
@@ -88,7 +94,19 @@ function animate()
         //---------------------------------------------------
         
         if(ball.hitTestObject(player)){
-            ball.vx = -ball.vx;	
+
+            if(ball.y > player.y - player.height / 6 && ball.y < player.y + player.height / 6) // Middle
+                {
+                    ball.vx = -ball.vx;
+                    ball.vy = 0;
+                }else if(ball.y < player.y - player.height / 6){
+                    ball.vx = -ball.vx;	
+                    ball.vy = -speedY;	
+                } else if (ball.y > player.y + player.height / 6)
+                    {
+                        ball.vx =  -ball.vx;	
+                        ball.vy =  speedY;		
+                    }
         }
 
 
