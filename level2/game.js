@@ -13,8 +13,9 @@ var player;
 	
 	//Instantiate the Player
 	player = new GameObject(50, canvas.height / 2 , 20, 100);
-	boundryTop = new GameObject(canvas.width / 2, -1 , canvas.width, 1);
-	boundryBottom = new GameObject(canvas.width / 2, canvas.height + 1 , canvas.width, 1);
+	ball = new GameObject(canvas.width / 2, canvas.height / 2 ,50,50);
+    ball.vx = 8;
+	ball.vy = -8;
 
 	//Set the Animation Timer
 	timer = setInterval(animate, interval);
@@ -23,7 +24,7 @@ function animate()
 {
 	//Erase the Screen
 	context.clearRect(0,0,canvas.width, canvas.height);	
-	
+	ball.move();
 	
 	//Move the Player to the right
 	/*if(d)
@@ -47,14 +48,53 @@ function animate()
 		player.y += 10;
 	}
 
-    if(boundryTop.hitTestObject(player)){
-        player.y = player.height / 2 ;
-    }
-    if(boundryBottom.hitTestObject(player)){
-        player.y = canvas.height - player.height / 2  ;
-    }
+    
+   if (player.y < 0 + player.height/2){
+    player.y = player.height / 2 ;
+   }
+   if (player.y > canvas.height - player.height/2){
+    player.y = canvas.height - player.height / 2  ;
+   }
+
+
+    
+    	//--------------Bounce of Right----------------------
+	if(ball.x > canvas.width - ball.width/2)
+        {
+            ball.vx = -ball.vx;	
+            
+        }
+        //---------------------------------------------------
+        /*--------------Bounce of Left----------------------
+        if(ball.x < (canvas.width - canvas.width) + ball.width/2)
+        {
+            ball.vx = -ball.vx;	
+        
+        }
+        */
+        //--------------Bounce of Top----------------------
+        if(ball.y < (canvas.height - canvas.height) + ball.width/2)
+        {
+            ball.vy = -ball.vy;	
+            
+        }
+        //---------------------------------------------------
+        //--------------Bounce of Top----------------------
+        if(ball.y > canvas.height - ball.width/2)
+        {
+            ball.vy = -ball.vy;	
+        
+        }
+        //---------------------------------------------------
+        
+        if(ball.hitTestObject(player)){
+            ball.vx = -ball.vx;	
+        }
+
+
 	
 	//Update the Screen
 	player.drawRect();
-	boundry.drawRect();
+	ball.drawCircle();
+   
 }
