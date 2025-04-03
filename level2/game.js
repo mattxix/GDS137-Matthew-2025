@@ -65,13 +65,13 @@ function animate()
             
         }
         //---------------------------------------------------
-        /*--------------Bounce of Left----------------------
-        if(ball.x < (canvas.width - canvas.width) + ball.width/2)
+        //--------------Bounce of Left----------------------
+        if(ball.x < (canvas.width - canvas.width) - ball.width/2)
         {
-            ball.vx = -ball.vx;	
-        
+            ball.x = canvas.width / 2;
+            ball.y = canvas.width / 2;
         }
-        */
+        
         //--------------Bounce of Top----------------------
         if(ball.y < (canvas.height - canvas.height) + ball.width/2)
         {
