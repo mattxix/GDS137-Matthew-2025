@@ -13,6 +13,8 @@ var player;
 	
 	//Instantiate the Player
 	player = new GameObject(50, canvas.height / 2 , 20, 100);
+	boundryTop = new GameObject(canvas.width / 2, -1 , canvas.width, 1);
+	boundryBottom = new GameObject(canvas.width / 2, canvas.height + 1 , canvas.width, 1);
 
 	//Set the Animation Timer
 	timer = setInterval(animate, interval);
@@ -44,7 +46,15 @@ function animate()
 		console.log("Moving Down");
 		player.y += 10;
 	}
+
+    if(boundryTop.hitTestObject(player)){
+        player.y = player.height / 2 ;
+    }
+    if(boundryBottom.hitTestObject(player)){
+        player.y = canvas.height - player.height / 2  ;
+    }
 	
 	//Update the Screen
 	player.drawRect();
+	boundry.drawRect();
 }
