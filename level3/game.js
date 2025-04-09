@@ -33,9 +33,17 @@ function animate()
 	ball.move();
     context.font = "20px Georgia";
     context.textAlign = 'center';
-    context.fillText("Player 1 | Player 2", canvas.width / 2, 25);
+    context.fillText("Player 1 | Player 2", canvas.width / 2 + 1, 25);
     context.fillText(p1Wins + " - " + p2Wins, canvas.width / 2, 50);
-
+    context.save();
+    context.strokeStyle = "rgb(50, 75, 50)";
+    context.beginPath();
+    context.moveTo(canvas.width / 2, 0);
+    context.lineTo(canvas.width / 2, canvas.height);
+    context.closePath();
+    context.lineWidth = 2; 
+    context.stroke();
+    context.restore();
 	
 	//Move the Player to the right
 	/*if(d)
