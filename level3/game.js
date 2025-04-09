@@ -7,6 +7,8 @@ var timer;
 var interval = 1000/60;
 var player;
 var speedY;
+var p1Wins = 0;
+var p2Wins = 0;
 
 	//Set Up the Canvas
 	canvas = document.getElementById("canvas");
@@ -29,6 +31,11 @@ function animate()
 	//Erase the Screen
 	context.clearRect(0,0,canvas.width, canvas.height);	
 	ball.move();
+    context.font = "20px Georgia";
+    context.textAlign = 'center';
+    context.fillText("Player 1 | Player 2", canvas.width / 2, 25);
+    context.fillText(p1Wins + " - " + p2Wins, canvas.width / 2, 50);
+
 	
 	//Move the Player to the right
 	/*if(d)
@@ -86,7 +93,7 @@ function animate()
             ball.y = canvas.height / 2;
             ball.vx = -8;
 	        ball.vy = 0;
-            
+            p1Wins += 1;
         }
         //---------------------------------------------------
         //--------------Bounce of Left----------------------
@@ -96,6 +103,7 @@ function animate()
             ball.y = canvas.height / 2;
             ball.vx = 8;
 	        ball.vy = 0;
+            p2Wins += 1;
 
         }
         
@@ -152,5 +160,6 @@ function animate()
 	player.drawRect();
 	player2.drawRect();
 	ball.drawCircle();
+    
    
 }
