@@ -9,10 +9,12 @@ var player;
 var speedY;
 var p1Wins = 0;
 var p2Wins = 0;
+var img = document.getElementById("orb");
 
 	//Set Up the Canvas
 	canvas = document.getElementById("canvas");
-	context = canvas.getContext("2d");	
+	context = canvas.getContext("2d");
+    
 	
 	//Instantiate the Player
 	player = new GameObject(50, canvas.height / 2 , 20, 100);
@@ -44,6 +46,7 @@ function animate()
     context.lineWidth = 2; 
     context.stroke();
     context.restore();
+   
 	
 	//Move the Player to the right
 	/*if(d)
@@ -167,7 +170,7 @@ function animate()
 	//Update the Screen
 	player.drawRect();
 	player2.drawRect();
-	ball.drawCircle();
-    
+	//ball.drawCircle();
+    context.drawImage(img, ball.x - ball.width , ball.y - (ball.height) , ball.width *2, ball.height *2 );
    
 }
