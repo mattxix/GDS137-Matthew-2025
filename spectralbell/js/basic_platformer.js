@@ -8,6 +8,9 @@ var player;
 var explode;
 var activate = 0;
 var activate2 = 0;
+var enemies = [];
+var numEnemies;
+
 
 
 	canvas = document.getElementById("canvas");
@@ -21,6 +24,8 @@ var activate2 = 0;
 	explode.width = 250;
 	explode.height = 250;
 	explode.color = "#66ff33";
+
+	
 
 	platform0 = new GameObject();
 		platform0.width = 200;
@@ -42,7 +47,7 @@ var activate2 = 0;
 function launch()
 {
 	gravity = .325;
-	player.vx = 20;
+	player.vx = 25;
 	activate = 2;
 }
 function blowUp()
@@ -53,11 +58,25 @@ function blowUp()
 	player.x = -10000
 }
 
+//--------------Enemy Random Spawn----------------------
+numEnemies = 12; 
+for (i = 0; i < numEnemies; i++)
+{
+	enemies[i] = new GameObject;
+	var randSize = (Math.round(Math.random() * (70 - (55) + 1) + (55)));
+	enemies[i].width = randSize;
+	enemies[i].height = randSize;
+	enemies[i].x = (Math.random() * ((canvas.width - 75) - (canvas.width*.40) + 1) + (canvas.width*.40));
+	enemies[i].y = (Math.random() * ((canvas.height - 75) - (0) + 1) + (0));
+}
+//==============================================
+
+
 function animate()
 {
 	
 	context.clearRect(0,0,canvas.width, canvas.height);	
-
+	
 	if(w )
 	{
 		
@@ -65,11 +84,11 @@ function animate()
 
 	if(a)
 	{
-		//player.vx += -player.ax * player.force;
+	
 	}
 	if(d)
 	{
-		//player.vx += player.ax * player.force;
+		
 	}
 	if(sp && activate == 0)
 	{
@@ -147,26 +166,26 @@ function animate()
 		player.vx = -player.vx;	
 		player.x = canvas.width - player.width/2;
 	}
-	//---------------------------------------------------
+	//==============================================
 	//--------------Bounce of Left----------------------
 	if(player.x < (canvas.width - canvas.width) + player.width/2)
 	{
 		player.vx = -player.vx;	
 	}
-	//---------------------------------------------------
+	//==============================================
 	//--------------Bounce of Top----------------------
 	if(player.y < (canvas.height - canvas.height) + player.width/2)
 	{
 		player.vy = -player.vy;	
 	}
-	//---------------------------------------------------
+	//==============================================
 	//--------------Bounce of Bottom----------------------
 	if(player.y > canvas.height - player.width/2)
 	{
 		player.y = canvas.height - player.width/2
 		player.vy = -player.vy;	
 	}
-	//---------------------------------------------------
+	//==============================================
 	
 	
 	
@@ -175,6 +194,11 @@ function animate()
 	//Show hit points
 	player.drawCircle();
 	explode.drawCircle();
+	
 	goal.drawCircle();
+	for (i = 0; i < enemies.length; i++)
+		{
+			enemies[i].drawRect();
+		}
 }
 
