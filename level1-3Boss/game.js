@@ -148,36 +148,37 @@ function animate()
         //player 1 
         if(ball.hitTestObject(player)){
 
-            if(ball.x + ball.height / 2 > player.x - player.width / 6 && ball.x < player.x + player.width / 6) // Middle
-                {
-                    ball.y = ball.y - player.height /2 ;
-                    ball.vy = -35;
-                    console.log("middle");
-                }else if(ball.x + ball.height / 2  < player.x - player.width / 3){ // Farleft
-                    ball.y = ball.y - player.height /2;
+            // Middle
+                
+            ball.y = player.y - ball.height/2 - player.height/2 ;
+            ball.vy = -35;
+            console.log("middle");
+            if(ball.x < player.x - player.width / 3) // Farleft
+            { 
+                    
                     ball.vx = -ball.force * 5;	
-                    ball.vy = -35;	
+                   
                     console.log("Farleft");
-                }else if(ball.x + ball.height / 2  < player.x - player.width / 6){ // closeleft
-                    ball.y = ball.y - player.height /2;
+            }else if(ball.x  < player.x - player.width / 6){ // closeleft
+                    
                     ball.vx = -ball.force;	
-                    ball.vy = -35;	
+                   
                     console.log("closeleft");
-                } else if (ball.x + ball.height / 2  > player.x + player.width / 3) // Far Right
-                    {
-                        ball.y = ball.y - player.height /2;
+            } else if (ball.x > player.x + player.width / 3) // Far Right
+            {
+                       
                         ball.vx =  ball.force * 5;		
-                        ball.vy = -35;
+                      
                         console.log("Far right");
                     
-                } else if (ball.x + ball.height / 2  > player.x + player.width / 6) // closeRight
-                    {
-                        ball.y = ball.y - player.height /2;
+            } else if (ball.x > player.x + player.width / 6) // closeRight
+            {
+                        
                         ball.vx =  ball.force;		
-                        ball.vy = -35;
+                       
                         console.log("closeright");
-                    }
-                    score += 1;	
+            }
+            score += 1;	
         }
         
 
