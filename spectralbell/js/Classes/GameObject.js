@@ -11,6 +11,7 @@ function GameObject(obj)
 		this.ay = 1;
 		this.vx = 0;
 		this.vy = 0;
+		this.angle = 0;
 
 	//whether or not the object can jump
 	this.canJump = false;
@@ -34,6 +35,7 @@ function GameObject(obj)
 		context.save();
 			context.fillStyle = this.color;
 			context.translate(this.x, this.y);
+			context.rotate(this.angle * Math.PI/180);
 			context.fillRect((-this.width/2), (-this.height/2), this.width, this.height);
 		context.restore();
 		
