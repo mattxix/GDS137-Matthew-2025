@@ -13,11 +13,13 @@ var numEnemies;
 var fireDirectionY;
 var fireDirectionX;
 var speed = 0;
+var speedUnrounded;
 
 
 
 	canvas = document.getElementById("canvas");
 	canvas.addEventListener("mousemove", track);
+	canvas.style.backgroundColor="#CCCCCF";
 	var mouse = {x:0,y:0};
 	context = canvas.getContext("2d");	
 
@@ -229,6 +231,7 @@ function animate()
 	if (activate == 0){
 	player.angle = radians * 180/Math.PI;
 	speed = Math.round(dist/25);
+	speedUnrounded = dist/25;
 	context.save();
 	context.strokeStyle = "#000000";
 	context.beginPath();
@@ -246,15 +249,15 @@ function animate()
 	var dx = mouse.x - player.x;
 	var dy = mouse.y - player.y;
 	var radians = Math.atan2(dy, dx);
-	fireDirectionX = Math.cos(radians) * speed;
-	fireDirectionY = Math.sin(radians) * speed;
+	fireDirectionX = Math.cos(radians) * speedUnrounded;
+	fireDirectionY = Math.sin(radians) * speedUnrounded;
 	
 	for (i=0; i < 100; i++){
 		
 		
 		if (i % 2 == 0){
 			context.save();
-			context.strokeStyle ="#8AA8FF";
+			context.strokeStyle ="#4664FF";
 			context.beginPath();
 			context.moveTo(x, y);
 			context.lineTo(x + fireDirectionX , y + fireDirectionY);
