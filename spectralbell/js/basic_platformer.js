@@ -84,7 +84,6 @@ function blowUp()
 	explode.x = tempX; 
 	explode.y = tempY; 
 	flag = 2;
-	score++;
 	player.x = -10000
 	setTimeout(expoOff, 400)
 }
@@ -310,6 +309,7 @@ function animate()
 			if(explode.hitTestObject(enemy))
 			{
 				enemy.x = 9000;
+				score++;
 			}
 			enemy.drawCircle();
 		}
