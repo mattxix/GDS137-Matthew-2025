@@ -14,24 +14,26 @@ var fireDirectionY;
 var fireDirectionX;
 var speed = 0;
 var speedUnrounded;
+var score = 0;
+var flag = 0;
 
 
 
 	canvas = document.getElementById("canvas");
 	canvas.addEventListener("mousemove", track);
-	canvas.style.backgroundColor="#CCCCCF";
+	canvas.style.backgroundColor="#392c31";
 	var mouse = {x:0,y:0};
 	context = canvas.getContext("2d");	
 
 	player = new GameObject({x:100, y:canvas.height/2-100,});
 	player.width = 50;
 	player.height = 50;
-	player.color = "#779ECB";
+	player.color = "#28b7c2";
 
 	explode = new GameObject({x:10000, y:5000,});
 	explode.width = 250;
 	explode.height = 250;
-	explode.color = "#66ff33";
+	explode.color = "#286ac2";
 
 	
 
@@ -41,7 +43,7 @@ var speedUnrounded;
 		platform0.y = canvas.height - platform0.height/2;
 		platform0.color = "#66ff33";
 	*/
-	goal = new GameObject({width:24, height:50, x:canvas.width-50, y:100, color:"#00ffff"});
+	//goal = new GameObject({width:24, height:50, x:canvas.width-50, y:100, color:"#00ffff"});
 	
 
 	var fX = .99;
@@ -71,33 +73,39 @@ function launch()
 	player.vy = fireDirectionY;
 	activate = 2;
 }
+function expoOff(){
+	explode.x = 8000;
+}
 function blowUp()
 {
 	activate = 2;
-	explode.x = player.x; 
-	explode.y = player.y; 
+	var tempX = player.x;
+	var tempY = player.y;
+	explode.x = tempX; 
+	explode.y = tempY; 
+	flag = 2;
+	score++;
 	player.x = -10000
+	setTimeout(expoOff, 400)
 }
 
 //--------------Enemy Random Spawn----------------------
 numEnemies = 12; 
 var enemyColors = [
-	"#bbabb3",
-	"#a4909a",
-	"#8c7680",
-	"#756169",
-	"#69585f",
-	"#54474c",
-	"#30272b"];
+	"#87231c",
+	"#741e18",
+	"#611914",
+	"#4d1410"
+	];
 for (i = 0; i < numEnemies; i++)
 {
 	enemies[i] = new GameObject;
 	var randSize = (Math.round(Math.random() * (70 - (55) + 1) + (55)));
-	enemies[i].color = enemyColors[(Math.floor(Math.random() * (6.9 - (0)) + (0)))];
+	enemies[i].color = enemyColors[(Math.floor(Math.random() * (3.9 - (0)) + (0)))];
 	enemies[i].width = randSize;
 	enemies[i].height = randSize;
 	enemies[i].x = (Math.random() * ((canvas.width - 75) - (canvas.width*.40) + 1) + (canvas.width*.40));
-	enemies[i].y = (Math.random() * ((canvas.height - 75) - (0) + 1) + (0));
+	enemies[i].y = (Math.random() * ((canvas.height - 75) - (0) + 75) + (75));
 }
 //==============================================
 
@@ -158,6 +166,7 @@ function animate()
 	if (activate2 == 1 )
 	{
 		blowUp();
+		activate2 = 5;
 		
 	}
 	
@@ -191,12 +200,7 @@ function animate()
 	
 
 		
-	if(player.hitTestObject(goal))
-	{
-		goal.y = 10000;
-		context.textAlign = "center";
-		context.drawText("You Win!!!", canvas.width/2, canvas.height/2);
-	}
+	
 
 	//--------------Bounce of Right----------------------
 	if(player.x > canvas.width - player.width/2)
@@ -233,14 +237,14 @@ function animate()
 	speed = Math.round(dist/25);
 	speedUnrounded = dist/25;
 	context.save();
-	context.strokeStyle = "#000000";
+	context.strokeStyle = "white";
 	context.beginPath();
 	context.moveTo(player.x, player.y);
 	context.lineTo(mouse.x , mouse.y);
 	context.stroke();
 	context.restore();
 	context.font = "20px Trebuchet MS";
-	context.fillStyle = "black";
+	context.fillStyle = "white";
 	context.textAlign = 'center';
 	context.fillText("Speed: " + speed + "mph", player.x, player.y - 50);
 
@@ -257,7 +261,7 @@ function animate()
 		
 		if (i % 2 == 0){
 			context.save();
-			context.strokeStyle ="#4664FF";
+			context.strokeStyle ="#7ed3da";
 			context.beginPath();
 			context.moveTo(x, y);
 			context.lineTo(x + fireDirectionX , y + fireDirectionY);
@@ -275,6 +279,9 @@ function animate()
 
 	}
 
+	
+	
+
 	//spins player after launch
 	if (activate != 0){
 		player.angle += player.vx/(Math.PI*2*player.width/2)*360;
@@ -289,10 +296,30 @@ function animate()
 	player.drawRect();
 	explode.drawCircle();
 	
-	goal.drawCircle();
+	
+	//goal.drawCircle();
 	for (i = 0; i < enemies.length; i++)
 		{
-			enemies[i].drawRect();
+			let enemy = enemies[i];
+			if(player.hitTestObject(enemy))
+			{
+				//Bounce of the enemies
+				player.vy = -player.vy;
+				//player.vx = -player.vx;
+			}
+			if(explode.hitTestObject(enemy))
+			{
+				enemy.x = 9000;
+			}
+			enemy.drawCircle();
 		}
+
+	
+	context.font = "30px Arial";
+    context.textAlign = 'left';
+	context.fillStyle = "white";
+    context.fillText("Score: " + score, 50, 50);
+    context.save();
+	
 }
 
