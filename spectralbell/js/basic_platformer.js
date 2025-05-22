@@ -22,38 +22,95 @@ var enemysOut = 0;
 var minus = 0;
 var bPlat;
 var RPlat;
-
+var start = 0;
+var state = 'menu';
+var button;
+var ibutton;
+var stateFlag = 0;
+var state = menu;
 
 
 	canvas = document.getElementById("canvas");
 	canvas.addEventListener("mousemove", track);
-	canvas.style.backgroundColor="#392c31";
 	var mouse = {x:0,y:0};
 	context = canvas.getContext("2d");	
+	function reset(){
 
-	player = new GameObject({x:100, y:canvas.height/2-100,});
-	player.width = 50;
-	player.height = 50;
-	player.color = "#28b7c2";
+		canvas.style.backgroundColor="#392c31";
+		
 
-	explode = new GameObject({x:10000, y:5000,});
-	explode.width = 250;
-	explode.height = 250;
-	explode.color = "#286ac2";
+		player = new GameObject({x:100, y:canvas.height/2-100,});
+		player.width = 50;
+		player.height = 50;
+		player.color = "#28b7c2";
 
-	bPlat = new GameObject({x:700, y:canvas.height,});
-	bPlat.width = 250;
-	bPlat.height = 25;
-	bPlat.color = "#28b7c2";
-	bPlat.vx = 4;
+		explode = new GameObject({x:10000, y:5000,});
+		explode.width = 250;
+		explode.height = 250;
+		explode.color = "#286ac2";
 
-	RPlat = new GameObject({x:canvas.width, y:500,});
-	RPlat.width = 25;
-	RPlat.height = 250;
-	RPlat.color = "#28b7c2";
-	RPlat.vy = 4;
+		bPlat = new GameObject({x:700, y:canvas.height,});
+		bPlat.width = 250;
+		bPlat.height = 25;
+		bPlat.color = "#28b7c2";
+		bPlat.vx = 4;
 
+		RPlat = new GameObject({x:canvas.width, y:500,});
+		RPlat.width = 25;
+		RPlat.height = 250;
+		RPlat.color = "#28b7c2";
+		RPlat.vy = 4;
 
+		button = new GameObject({x:canvas.width/2, y:canvas.height/2 + 135,});
+		button.width = 300;
+		button.height = 75;
+		button.color = "#28b7c2";
+
+		ibutton = new GameObject({x:canvas.width/2, y:canvas.height/2 + 250,});
+		ibutton.width = 300;
+		ibutton.height = 75;
+		ibutton.color = "#28b7c2";
+		ammo = 5;
+		expoAmmo = 3; 
+		speed = 0;
+
+		//--------------Enemy Random Spawn----------------------
+		numEnemies = 12; 
+		var enemyColors = [
+			"#87231c",
+			"#741e18",
+			"#611914",
+			"#4d1410"
+			];
+		for (i = 0; i < numEnemies; i++)
+		{
+			enemies[i] = new GameObject;
+			var randSize = (Math.round(Math.random() * (70 - (55) + 1) + (55)));
+			enemies[i].color = enemyColors[(Math.floor(Math.random() * (3.9 - (0)) + (0)))];
+			enemies[i].width = randSize;
+			enemies[i].height = randSize;
+			enemies[i].x = (Math.random() * ((canvas.width - 75) - (canvas.width*.40) + 1) + (canvas.width*.40));
+			enemies[i].y = Math.random() * (canvas.height - 75 * 2) + 75;
+			enemies[i].hit = false;
+		}
+		//==============================================
+
+		player.x = 100;
+		player.y = canvas.height/2-100;
+		activate = 0;
+		gravity = 0;
+		player.vx = 0;
+		player.vy = 0;
+		activate2 = 0;
+		minus = 0;
+		score = 0;
+		enemysOut = 0
+
+		
+	}
+	reset();
+
+	
 	
 
 	/*platform0 = new GameObject();
@@ -72,7 +129,156 @@ var RPlat;
 
 	interval = 1000/60;
 	timer = setInterval(animate, interval);
+function menu(){
+		
+		context.restore();
+		context.clearRect(0,0,canvas.width, canvas.height);	
+		button.drawRect();
+		ibutton.drawRect();
+		context.restore();
+		context.font = "100px Trebuchet MS";
+    	context.textAlign = 'center';
+		context.fillStyle = "white";
+    	context.fillText("Spectral Bell", canvas.width/2, canvas.height/2);
+    	context.save();
+		/*
+		context.restore();
+		context.font = "25px Trebuchet MS";
+    	context.textAlign = 'center';
+		context.fillStyle = "white";
+    	context.fillText("Final Score: " + score, canvas.width/2, canvas.height/2 + 50);
+    	context.save();
+		*/
+		context.restore();
+		context.font = "40px Trebuchet MS";
+		context.fillStyle = "white";
+		context.textAlign = 'center';
+		context.fillText("Press to Start", canvas.width/2, canvas.height/2 + 150);
+		context.save();
+
+		context.restore();
+		context.font = "40px Trebuchet MS";
+		context.fillStyle = "white";
+		context.textAlign = 'center';
+		context.fillText("Instructions", canvas.width/2, canvas.height/2 + 265);
+		context.save();
+		canvas.addEventListener('click', function(e) {
+    		var rect = canvas.getBoundingClientRect();
+    		var mouseX = e.clientX - rect.left;
+    		var mouseY = e.clientY - rect.top;
+    		if (mouseX >= button.x - button.width / 2 &&
+    		    mouseX <= button.x + button.width / 2 &&
+    		    mouseY >= button.y - button.height / 2 &&
+    		    mouseY <= button.y + button.height / 2) 
+			{
+    		    reset();
+				state = game;
+    		}
+		});
+		canvas.addEventListener('click', function(e) {
+    		var rect = canvas.getBoundingClientRect();
+    		var mouseX = e.clientX - rect.left;
+    		var mouseY = e.clientY - rect.top;
+    		if (mouseX >= ibutton.x - ibutton.width / 2 &&
+    		    mouseX <= ibutton.x + ibutton.width / 2 &&
+    		    mouseY >= ibutton.y - ibutton.height / 2 &&
+    		    mouseY <= ibutton.y + ibutton.height / 2) 
+			{
+				state = instructions;
+    		}
+		});
 	
+}
+function instructions()
+{
+		context.clearRect(0,0,canvas.width, canvas.height);	
+		context.drawImage(ints, 0, 0);
+		button.drawRect();
+		context.restore();
+		context.font = "40px Trebuchet MS";
+		context.fillStyle = "white";
+		context.textAlign = 'center';
+		context.fillText("Press to Start", canvas.width/2, canvas.height/2 + 150);
+		context.save();
+}
+function win(){
+		player.x = canvas.width/2;
+		player.y = canvas.height/2;
+		player.vy = 0;
+		player.vx = 0;
+
+		context.restore();
+		context.clearRect(0,0,canvas.width, canvas.height);
+		button.drawRect();	
+		context.restore();
+		context.font = "100px Trebuchet MS";
+    	context.textAlign = 'center';
+		context.fillStyle = "white";
+    	context.fillText("GOOD WIN!", canvas.width/2, canvas.height/2);
+    	context.save();
+
+		context.restore();
+		context.font = "25px Trebuchet MS";
+    	context.textAlign = 'center';
+		context.fillStyle = "white";
+    	context.fillText("Final Score: " + score, canvas.width/2, canvas.height/2 + 50);
+    	context.save();
+
+		context.restore();
+		context.font = "40px Trebuchet MS";
+		context.fillStyle = "white";
+		context.textAlign = 'center';
+		context.fillText("Play Again?", canvas.width/2, canvas.height/2 + 150);
+		context.save();
+		canvas.addEventListener('click', function(e) {
+    		var rect = canvas.getBoundingClientRect();
+    		var mouseX = e.clientX - rect.left;
+    		var mouseY = e.clientY - rect.top;
+    		if (mouseX >= button.x - button.width / 2 &&
+    		    mouseX <= button.x + button.width / 2 &&
+    		    mouseY >= button.y - button.height / 2 &&
+    		    mouseY <= button.y + button.height / 2) 
+			{
+				stateFlag = 1;
+    		    reset();
+				state = game;
+    		}
+		});
+}
+function lose(){
+		context.clearRect(0,0,canvas.width, canvas.height);	
+		button.drawRect();
+		context.restore();
+		context.font = "100px Trebuchet MS";
+    	context.textAlign = 'center';
+		context.fillStyle = "white";
+    	context.fillText("GAME OVER...", canvas.width/2, canvas.height/2);
+    	context.save();
+
+		context.restore();
+		context.font = "40px Trebuchet MS";
+		context.fillStyle = "white";
+		context.textAlign = 'center';
+		context.fillText("Play Again?", canvas.width/2, canvas.height/2 + 150);
+		context.save();
+		canvas.addEventListener('click', function(e) {
+    		var rect = canvas.getBoundingClientRect();
+    		var mouseX = e.clientX - rect.left;
+    		var mouseY = e.clientY - rect.top;
+    		if (mouseX >= button.x - button.width / 2 &&
+    		    mouseX <= button.x + button.width / 2 &&
+    		    mouseY >= button.y - button.height / 2 &&
+    		    mouseY <= button.y + button.height / 2) 
+			{
+				console.log("h");
+				stateFlag = 1;
+				reset();
+				state = game;
+				
+    		}
+		});
+}
+
 function minusScore(){
 	score -= 100;
 	minus = 1;
@@ -116,33 +322,10 @@ function blowUp()
 	setTimeout(expoOff, 400)
 }
 
-//--------------Enemy Random Spawn----------------------
-numEnemies = 12; 
-var enemyColors = [
-	"#87231c",
-	"#741e18",
-	"#611914",
-	"#4d1410"
-	];
-for (i = 0; i < numEnemies; i++)
-{
-	enemies[i] = new GameObject;
-	var randSize = (Math.round(Math.random() * (70 - (55) + 1) + (55)));
-	enemies[i].color = enemyColors[(Math.floor(Math.random() * (3.9 - (0)) + (0)))];
-	enemies[i].width = randSize;
-	enemies[i].height = randSize;
-	enemies[i].x = (Math.random() * ((canvas.width - 75) - (canvas.width*.40) + 1) + (canvas.width*.40));
-	enemies[i].y = Math.random() * (canvas.height - 75 * 2) + 75;
-	enemies[i].hit = false;
-}
-//==============================================
 
-
-function animate()
-{
-	
+function game(){
 	context.clearRect(0,0,canvas.width, canvas.height);	
-
+	
 	var dx = mouse.x - player.x;
 	var dy = mouse.y - player.y;
 	
@@ -451,54 +634,19 @@ function animate()
 	}*/
 	bPlat.drawRect();
 	RPlat.drawRect();
-	if(ammo <= 0 ){
-		
-		context.clearRect(0,0,canvas.width, canvas.height);	
-		context.restore();
-		context.font = "100px Trebuchet MS";
-    	context.textAlign = 'center';
-		context.fillStyle = "white";
-    	context.fillText("GAME OVER...", canvas.width/2, canvas.height/2);
-    	context.save();
+	stateFlag = 0;
 
-		context.restore();
-		context.font = "40px Trebuchet MS";
-		context.fillStyle = "white";
-		context.textAlign = 'center';
-		context.fillText("Press T to Retry...", canvas.width/2, canvas.height/2 + 150);
-		context.save();
+	if(ammo <= 0 && stateFlag == 0 && (player.y > canvas.height + player.width/2 || player.x > canvas.width + player.width/2)){
+		state = lose;
 	}
-	if (enemysOut >= numEnemies)
+}
+
+function animate()
+{
+	state();
+	if (enemysOut >= numEnemies && stateFlag == 0)
 	{
-		player.x = canvas.width/2;
-		player.y = canvas.height/2;
-		player.vy = 0;
-		player.vx = 0;
-
-		context.restore();
-		context.clearRect(0,0,canvas.width, canvas.height);	
-		context.restore();
-		context.font = "100px Trebuchet MS";
-    	context.textAlign = 'center';
-		context.fillStyle = "white";
-    	context.fillText("GOOD WIN!", canvas.width/2, canvas.height/2);
-    	context.save();
-
-		context.restore();
-		context.font = "25px Trebuchet MS";
-    	context.textAlign = 'center';
-		context.fillStyle = "white";
-    	context.fillText("Final Score: " + score, canvas.width/2, canvas.height/2 + 50);
-    	context.save();
-
-		context.restore();
-		context.font = "40px Trebuchet MS";
-		context.fillStyle = "white";
-		context.textAlign = 'center';
-		context.fillText("Press T to Reset...", canvas.width/2, canvas.height/2 + 150);
-		context.save();
-	
+		state = win;
 	}
 	
 }
-
