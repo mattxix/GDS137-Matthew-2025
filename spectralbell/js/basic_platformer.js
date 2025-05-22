@@ -16,6 +16,12 @@ var speed = 0;
 var speedUnrounded;
 var score = 0;
 var flag = 0;
+var ammo = 5;
+var expoAmmo = 3;
+var enemysOut = 0;
+var minus = 0;
+var bPlat;
+var RPlat;
 
 
 
@@ -34,6 +40,19 @@ var flag = 0;
 	explode.width = 250;
 	explode.height = 250;
 	explode.color = "#286ac2";
+
+	bPlat = new GameObject({x:700, y:canvas.height,});
+	bPlat.width = 250;
+	bPlat.height = 25;
+	bPlat.color = "#28b7c2";
+	bPlat.vx = 4;
+
+	RPlat = new GameObject({x:canvas.width, y:500,});
+	RPlat.width = 25;
+	RPlat.height = 250;
+	RPlat.color = "#28b7c2";
+	RPlat.vy = 4;
+
 
 	
 
@@ -54,6 +73,15 @@ var flag = 0;
 	interval = 1000/60;
 	timer = setInterval(animate, interval);
 	
+function minusScore(){
+	score -= 100;
+	minus = 1;
+}
+
+function peggle(enemy){
+	enemy.x = 7000;
+}
+
 function track(e)
 {
 	var rect = canvas.getBoundingClientRect();
@@ -104,7 +132,8 @@ for (i = 0; i < numEnemies; i++)
 	enemies[i].width = randSize;
 	enemies[i].height = randSize;
 	enemies[i].x = (Math.random() * ((canvas.width - 75) - (canvas.width*.40) + 1) + (canvas.width*.40));
-	enemies[i].y = (Math.random() * ((canvas.height - 75) - (0) + 75) + (75));
+	enemies[i].y = Math.random() * (canvas.height - 75 * 2) + 75;
+	enemies[i].hit = false;
 }
 //==============================================
 
@@ -123,19 +152,20 @@ function animate()
 	
 	if(w )
 	{
-		
+		player.y += -6;
 	}
 
-	if(a)
+	if(s)
 	{
-	
+		player.y += 6;
 	}
 	if(d)
 	{
 		
 	}
-	if(sp && activate == 0)
+	if(sp && activate == 0 && ammo > 0)
 	{
+		ammo -= 1;
 		activate = 1;
 	}
 	if (r)
@@ -147,9 +177,11 @@ function animate()
 		player.vx = 0;
 		player.vy = 0;
 		activate2 = 0;
+		minus = 0;
 	}
-	if (f && activate2 == 0)
+	if (f && activate2 == 0 && expoAmmo > 0)
 	{
+		expoAmmo -= 1;
 		activate2 = 1;
 	}
 	
@@ -197,15 +229,23 @@ function animate()
 	}
 	*/
 	
+	//-------------Borders-------------
+	if(player.y < 75 && activate == 0){
+		player.y = 76;
+	}
+	if(player.y > canvas.height - 75 && activate == 0){
+		player.y = canvas.height - 76;
+	}
 
 		
 	
 
 	//--------------Bounce of Right----------------------
-	if(player.x > canvas.width - player.width/2)
+	if((player.hitTestObject(RPlat)))
 	{
 		player.vx = -player.vx;	
 		player.x = canvas.width - player.width/2;
+		RPlat.x = 4000;
 	}
 	//==============================================
 	//--------------Bounce of Left----------------------
@@ -220,12 +260,48 @@ function animate()
 		player.vy = -player.vy;	
 	}
 	//==============================================
+	//--------------Reset Bottom----------------------
+	if(player.y > (canvas.height) + player.width*7)
+	{
+		player.x = 100;
+		player.y = canvas.height/2-100;
+		activate = 0;
+		gravity = 0;
+		player.vx = 0;
+		player.vy = 0;
+		activate2 = 0;
+		if (minus != 1)
+		minusScore();
+		minus = 0;
+			
+	}
+	//==============================================
+	//--------------reset right----------------------
+	if(player.x > (canvas.width) + player.width*4)
+	{
+		player.x = 100;
+		player.y = canvas.height/2-100;
+		activate = 0;
+		gravity = 0;
+		player.vx = 0;
+		player.vy = 0;
+		activate2 = 0;
+		if (minus != 1)
+		minusScore();
+		minus = 0;	
+	}
+	//==============================================
 	//--------------Bounce of Bottom----------------------
-	if(player.y > canvas.height - player.width/2)
+	
+	if((player.hitTestObject(bPlat)))
 	{
 		player.y = canvas.height - player.width/2
 		player.vy = -player.vy;	
+		bPlat.y = 4000;
+		
 	}
+	
+	
 	//==============================================
 	
 	//--------------Point at mouse / drawing lines----------------------
@@ -278,6 +354,14 @@ function animate()
 
 	}
 
+	bPlat.move();
+	if (bPlat.x <= 0 + bPlat.width/2 || bPlat.x >= canvas.width - bPlat.width/2) {
+    bPlat.vx *= -1; 
+}
+	RPlat.move();
+	if (RPlat.y <= 0 + RPlat.height/2 || RPlat.y >= canvas.height - RPlat.height/2) {
+    RPlat.vy *= -1; 
+}
 	
 	
 
@@ -295,31 +379,126 @@ function animate()
 	player.drawRect();
 	explode.drawCircle();
 	
+
 	
 	//goal.drawCircle();
 	for (i = 0; i < enemies.length; i++)
 		{
 			let enemy = enemies[i];
-			if(player.hitTestObject(enemy))
-			{
-				//Bounce of the enemies
-				player.vy = -player.vy;
-				//player.vx = -player.vx;
-			}
-			if(explode.hitTestObject(enemy))
-			{
-				enemy.x = 9000;
-				score++;
-			}
+
+			if (!enemy.hit){
+				if(player.hitTestObject(enemy))
+				{
+					//Bounce of the enemies
+					player.vy = -player.vy;
+					if(player.x < enemy.x - player.width/2){
+						//player.vx = -player.vx;
+					}
+
+					enemy.color = "000000";
+					enemy.hit = true;
+					score+= 100;
+					enemysOut ++;
+					setTimeout(() => peggle(enemy), 500);
+					//enemy.x = 7000;
+					//player.vx = -player.vx;
+				}
+				if(explode.hitTestObject(enemy))
+				{
+					enemy.x = 9000;
+					enemy.hit = true;
+					score+= 100;
+					enemysOut ++;
+				}
+
+				}
+
 			enemy.drawCircle();
 		}
 
 	
-	context.font = "30px Arial";
-    context.textAlign = 'left';
+	context.font = "30px Trebuchet MS";
+    context.textAlign = 'right';
 	context.fillStyle = "white";
-    context.fillText("Score: " + score, 50, 50);
+    context.fillText("Score: " + score, canvas.width - 50, 50);
     context.save();
+
+	context.restore();
+	context.font = "30px Trebuchet MS";
+    context.textAlign = 'right';
+	context.fillStyle = "white";
+    context.fillText("Balls Left: " + ammo, canvas.width - 50, 100);
+    context.save();
+
+	context.restore();
+	context.font = "30px Trebuchet MS";
+    context.textAlign = 'right';
+	context.fillStyle = "white";
+    context.fillText("Explosions Left: " + expoAmmo, canvas.width - 50, 150);
+    context.save();
+	
+	/*if(player.y > canvas.height + player.width/2 + 50)
+	{
+		context.restore();
+		context.font = "50px Trebuchet MS";
+		context.fillStyle = "white";
+		context.textAlign = 'center';
+		context.fillText("Press R to Reset Ball...", canvas.width/2, canvas.height - 50);
+		context.save();
+		if (minus != 1)
+		minusScore();
+		
+	}*/
+	bPlat.drawRect();
+	RPlat.drawRect();
+	if(ammo <= 0 ){
+		
+		context.clearRect(0,0,canvas.width, canvas.height);	
+		context.restore();
+		context.font = "100px Trebuchet MS";
+    	context.textAlign = 'center';
+		context.fillStyle = "white";
+    	context.fillText("GAME OVER...", canvas.width/2, canvas.height/2);
+    	context.save();
+
+		context.restore();
+		context.font = "40px Trebuchet MS";
+		context.fillStyle = "white";
+		context.textAlign = 'center';
+		context.fillText("Press T to Retry...", canvas.width/2, canvas.height/2 + 150);
+		context.save();
+	}
+	if (enemysOut >= numEnemies)
+	{
+		player.x = canvas.width/2;
+		player.y = canvas.height/2;
+		player.vy = 0;
+		player.vx = 0;
+
+		context.restore();
+		context.clearRect(0,0,canvas.width, canvas.height);	
+		context.restore();
+		context.font = "100px Trebuchet MS";
+    	context.textAlign = 'center';
+		context.fillStyle = "white";
+    	context.fillText("GOOD WIN!", canvas.width/2, canvas.height/2);
+    	context.save();
+
+		context.restore();
+		context.font = "25px Trebuchet MS";
+    	context.textAlign = 'center';
+		context.fillStyle = "white";
+    	context.fillText("Final Score: " + score, canvas.width/2, canvas.height/2 + 50);
+    	context.save();
+
+		context.restore();
+		context.font = "40px Trebuchet MS";
+		context.fillStyle = "white";
+		context.textAlign = 'center';
+		context.fillText("Press T to Reset...", canvas.width/2, canvas.height/2 + 150);
+		context.save();
+	
+	}
 	
 }
 
